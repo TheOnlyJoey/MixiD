@@ -8,14 +8,16 @@ Unofficial Linux control panel for the Audient iD series interfaces based on lib
 
 Since there is no official support by Audient for the iD interfaces on Linux, MixID got created as an alternative to enable the functionality not available in the default class complient USB driver.
 
-## Notes and To DO
+## Notes and To Do
 
 * Currently only tested on iD14 and iD14 MKII, but should work with every iD series interface.
+  * Support list can be found [here](https://github.com/TheOnlyJoey/MixiD/wiki/Support-List)
+  * Please add your USB iD and amount of input/output details in an Issue so it can be added and verified in an update.
+* More usb ID's need to be added together with proper channel information to support all remaining iD interfaces.
+   * The protocol is mostly figured out, just needs verification/testing
 * Technically works on macOS
    * Should probably not use on Windows
 * UI needs some additional work
-* More usb ID's need to be added together with proper channel information to support all remaining iD interfaces.
-   * The protocol is mostly figured out, just needs verification/testing
 
 ## Compilation
 
