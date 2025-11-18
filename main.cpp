@@ -151,6 +151,9 @@ int main(int, char**)
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	//Init all the device properties
+	setup_devices();
+
 	// Main loop
 #ifdef __EMSCRIPTEN__
 	// For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
@@ -240,7 +243,7 @@ int main(int, char**)
 			ImGui::Begin("Monitor", nullptr, ImGuiWindowFlags_NoDecoration);
 			ImGui::SeparatorText("Connection");
 			
-			ImGui::Text("  Selected Driver: %s", items[driver_indicator]);
+			ImGui::Text("  Selected Driver: %s", devices[driver_indicator].name.c_str());
 			if (connected) {
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0,1.0,0.0,0.8));
 				ImGui::Text("               Connected");
@@ -257,7 +260,7 @@ int main(int, char**)
 			if (ImGui::Button(name.c_str(),ImVec2(ImGui::GetContentRegionAvail().x, 40))) {
 				connected = !connected;
 				if (connected) {
-					if (!driver_init(usb_id[driver_indicator])) {
+					if (!driver_init(devices[driver_indicator].usb_id)) {
 						connected = false;
 						ImGui::OpenPopup("No connection possible");
 					};
@@ -312,8 +315,25 @@ int main(int, char**)
 		if (show_another_window)
 		{
 			ImGui::Begin("Driver Select", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Combo("Interface type", &driver_indicator, items, IM_ARRAYSIZE(items));
-			ImGui::Text("USB ID: 0x%04X", usb_id[driver_indicator]);
+	        
+	        //const char* combo_preview_value = items[item_selected_idx];
+	        if (ImGui::BeginCombo("Interface type", devices[driver_indicator].name.c_str()))
+	        {
+	            for (int n = 0; n < devices.size(); n++)
+	            {
+	                const bool is_selected = (driver_indicator == n);
+	                if (ImGui::Selectable(devices[n].name.c_str(), is_selected))
+	                    driver_indicator = n;
+
+	                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+	                if (is_selected)
+	                    ImGui::SetItemDefaultFocus();
+	            }
+	            ImGui::EndCombo();
+	        }
+
+			//ImGui::Combo("Interface type", &driver_indicator, items, IM_ARRAYSIZE(items));
+			ImGui::Text("USB ID: 0x%04X", devices[driver_indicator].usb_id);
 			ImGui::End();
 		}
 		if (show_routing)

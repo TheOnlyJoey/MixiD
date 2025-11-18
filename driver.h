@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
+#include "device_properties.h"
 
 static libusb_device_handle *devh = NULL;
 static bool driver_connected = false;
