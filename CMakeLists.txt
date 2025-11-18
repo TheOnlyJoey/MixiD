@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15...4.0)
 project(
   MixiD
-  VERSION 0.1
+  VERSION 0.1.2
   LANGUAGES CXX)
  
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMake)

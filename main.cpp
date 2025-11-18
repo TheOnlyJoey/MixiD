@@ -32,8 +32,8 @@
 
 static int driver_indicator = 0;
 static bool connected = false;
-const char* items[] = { "iD14 MKII", "iD14", "iD22", "iD44"};
-std::vector<uint16_t> usb_id = { 0x0008, 0x0002, 0x0001, 0x0005};
+const char* items[] = { "iD14 MKII", "iD14", "iD22", "iD44", "iD48"};
+std::vector<uint16_t> usb_id = { 0x0008, 0x0002, 0x0001, 0x0005, 0x0012};
 std::vector<float> levels = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 static int inputs = 10;
 std::vector <std::string> inputlist = {"Mic 1", "Mic 2", "Digi 1", "Digi 2", "Digi 3", "Digi 4", "Digi 5", "Digi 6", "Digi 7", "Digi 8"};
