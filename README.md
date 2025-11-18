@@ -28,6 +28,13 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 * libglew-dev
 * GCC or Clang
 
+### Compile
+* git clone the repository
+* mkdir Release
+* cd Release
+* cmake -DCMAKE_BUILD_TYPE=Release ..
+* make
+
 ### Usage
 
 * Either run through sudo, or setup apropriate udev rules for your interface
