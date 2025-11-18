@@ -18,6 +18,7 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 * Technically works on macOS
    * Should probably not use on Windows
 * UI needs some additional work
+* For a complete to-do list please check the [issues](https://github.com/TheOnlyJoey/MixiD/issues)
 
 ## Compilation
 
