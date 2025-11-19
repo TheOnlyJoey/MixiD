@@ -1,4 +1,4 @@
-<img width="1392" height="940" alt="Screenshot 2025-11-19 at 00 25 08" src="https://github.com/user-attachments/assets/c5b1f729-f025-4967-b107-1c125ea86b89" />
+<img width="1318" height="875" alt="MixiD-0 1 4" src="https://github.com/user-attachments/assets/f8a9c1b3-cc15-4cc6-8b9c-5d4b7b33d46a" />
 
 # MixiD
 
@@ -10,9 +10,8 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 
 ## Notes and To Do
 
-* Currently only tested on iD14 and iD14 MKII, but should work with every iD series interface.
-  * Support list can be found [here](https://github.com/TheOnlyJoey/MixiD/wiki/Support-List)
-  * Please add your USB iD and amount of input/output details in an Issue so it can be added and verified in an update.
+* Support list can be found [here](https://github.com/TheOnlyJoey/MixiD/wiki/Support-List)
+  * Please add your USB iD and amount of input/output details in an [Issue](https://github.com/TheOnlyJoey/MixiD/issues) so it can be added and verified in an update.
 * More usb ID's need to be added together with proper channel information to support all remaining iD interfaces.
    * The protocol is mostly figured out, just needs verification/testing
 * Technically works on macOS
