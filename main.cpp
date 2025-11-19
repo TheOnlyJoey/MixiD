@@ -218,7 +218,7 @@ int main(int, char**)
 						ImGui::SetCursorPosY(3);
 					ImGui::Text("%s",(std::string("Mic ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
-					if (ImGui::VFaderFloat((std::to_string(i)+"##vMic").c_str(), ImVec2(42, absY/1.8), &bar_value[i], 0.0f, 1.0f, "%.2f")) {
+					if (ImGui::VFaderFloat((std::to_string(i)+"##vMic").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
 							set_channel_volume(i, bar_value[inputcounter]);
 					};
@@ -235,7 +235,7 @@ int main(int, char**)
 					ImGui::BeginGroup();
 					ImGui::Text("%s", (std::string("Digi ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
-					if (ImGui::VFaderFloat((std::to_string(i)+"##vDigi").c_str(), ImVec2(42, absY/1.8), &bar_value[i], 0.0f, 1.0f, "%.2f")) {
+					if (ImGui::VFaderFloat((std::to_string(i)+"##vDigi").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
 							set_channel_volume(i, bar_value[inputcounter]);
 					};
