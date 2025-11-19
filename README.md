@@ -55,6 +55,11 @@ udevadm control --reload-rules
 
 ## Version History
 
+* 0.1.4
+    * Now probes usb devices based on the supported id list and selects if possible
+    * Auto disconnects and re-attach to kernel when quitting the application (no more having to manually disconnect before closing)
+    * Now should properly set all faders depending on the individual device inputs
+    * Small UI Fixes
 * 0.1
     * Initial Release based around the iD14 and iD14 MKII with most essential features implemented.
 
