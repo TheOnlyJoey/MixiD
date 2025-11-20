@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15...4.0)
 project(
   MixiD
-  VERSION 0.1.4
+  VERSION 0.1.5
   LANGUAGES CXX)
 
 add_definitions(-DVERSION_MIXID="${MixiD_VERSION}") 
