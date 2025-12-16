@@ -18,6 +18,15 @@ static std::vector<device_properties> devices;
 
 void setup_devices()
 {
+	struct device_properties iD4;
+	iD4.name = "iD4";
+	iD4.usb_id = 0x0003;
+	iD4.mic_inputs = 1;
+	iD4.digital_inputs = 0;
+	iD4.outputs = 2;
+	iD4.digital_outputs = 0;
+	devices.push_back(iD4);
+
 	struct device_properties iD4MKII;
 	iD4MKII.name = "iD4 MKII";
 	iD4MKII.usb_id = 0x0009;
@@ -55,6 +64,16 @@ void setup_devices()
 	iD22.inserts = 2;
 	devices.push_back(iD22);
 
+	struct device_properties iD24;
+	iD24.name = "iD24";
+	iD24.usb_id = 0x000d;
+	iD24.mic_inputs = 2;
+	iD24.digital_inputs = 10;
+	iD24.outputs = 4;
+	iD24.digital_outputs = 14;
+	iD24.inserts = 2;
+	devices.push_back(iD24);
+
 	struct device_properties iD44;
 	iD44.name = "iD44";
 	iD44.usb_id = 0x0005;
@@ -64,6 +83,16 @@ void setup_devices()
 	iD44.digital_outputs = 16;
 	iD44.inserts = 2;
 	devices.push_back(iD44);
+
+	struct device_properties iD44MKII;
+	iD44MKII.name = "iD44 MKII";
+	iD44MKII.usb_id = 0x000b;
+	iD44MKII.mic_inputs = 4;
+	iD44MKII.digital_inputs = 16;
+	iD44MKII.outputs = 4;
+	iD44MKII.digital_outputs = 16;
+	iD44MKII.inserts = 2;
+	devices.push_back(iD44MKII);
 
 	struct device_properties iD48;
 	iD48.name = "iD48";

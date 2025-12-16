@@ -11,9 +11,11 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 ## Notes and To Do
 
 * Support list can be found [here](https://github.com/TheOnlyJoey/MixiD/wiki/Support-List)
-  * Please add your USB iD and amount of input/output details in an [Issue](https://github.com/TheOnlyJoey/MixiD/issues) so it can be added and verified in an update.
-* More usb ID's need to be added together with proper channel information to support all remaining iD interfaces.
-   * The protocol is mostly figured out, just needs verification/testing
+  * As of 17 December 2025 all known iD interfaces should be functional to some degree
+  * If a new device gets released, please add your USB iD and amount of input/output details in an [Issue](https://github.com/TheOnlyJoey/MixiD/issues) so it can be added and verified in an update.
+* The protocol is mostly figured out, just needs verification/testing
+   * Reading information back from the interfaces is still in progress.
+   * Things like VU meters and some switches/modes have yet to be implemented
 * Technically works on macOS
    * Should probably not use on Windows
 * UI needs some additional work
@@ -34,20 +36,32 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 * cmake -DCMAKE_BUILD_TYPE=Release ..
 * make
 
-### Usage
+## Usage
 
 * Either run through sudo, or setup apropriate udev rules for your interface
 * Run the MixiD executable
 
-## udev rules
+### udev rules
 
 Since by default, the audio interface is grabbed by the kernel module, and we require exclusive device grab to send information, we need to setup udev rules to allow not needing to use root permissions when opening MixiD.
 Luckily, all we have to do is add the Audient vendor id to the udev rules.
+The specific user might be different for your distro, but "plugdev" and "audio" seem to be the most commonly used.
 
+Either:
+```
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="2708", MODE="0666", GROUP="audio"' >> /etc/udev/rules.d/84-audient.rules
+```
+or
 ```
 echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="2708", MODE="0666", GROUP="plugdev"' >> /etc/udev/rules.d/84-audient.rules
+```
+depending on your distro's permission group.
+
+Then either reboot or use the following command to reload the udev rules for the running system.
+```
 udevadm control --reload-rules
 ```
+All done!
 
 ## Authors
 
@@ -55,6 +69,8 @@ udevadm control --reload-rules
 
 ## Version History
 
+* 0.1.6
+   * All known iD usb-id's are now known and implemented, MixiD should work on every known interface!
 * 0.1.4
     * Now probes usb devices based on the supported id list and selects if possible
     * Auto disconnects and re-attach to kernel when quitting the application (no more having to manually disconnect before closing)
