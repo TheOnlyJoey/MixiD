@@ -1,4 +1,4 @@
-<img width="1392" height="940" alt="Screenshot 2025-11-19 at 00 25 08" src="https://github.com/user-attachments/assets/c5b1f729-f025-4967-b107-1c125ea86b89" />
+<img width="1318" height="875" alt="MixiD-0 1 4" src="https://github.com/user-attachments/assets/f8a9c1b3-cc15-4cc6-8b9c-5d4b7b33d46a" />
 
 # MixiD
 
