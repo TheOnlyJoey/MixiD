@@ -44,11 +44,23 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 
 Since by default, the audio interface is grabbed by the kernel module, and we require exclusive device grab to send information, we need to setup udev rules to allow not needing to use root permissions when opening MixiD.
 Luckily, all we have to do is add the Audient vendor id to the udev rules.
+The specific user might be different for your distro, but "plugdev" and "audio" seem to be the most commonly used.
 
+Either:
+```
+echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="2708", MODE="0666", GROUP="audio"' >> /etc/udev/rules.d/84-audient.rules
+```
+or
 ```
 echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="2708", MODE="0666", GROUP="plugdev"' >> /etc/udev/rules.d/84-audient.rules
+```
+depending on your distro's permission group.
+
+Then either reboot or use the following command to reload the udev rules for the running system.
+```
 udevadm control --reload-rules
 ```
+All done!
 
 ## Authors
 
