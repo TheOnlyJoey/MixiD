@@ -35,12 +35,12 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 * cmake -DCMAKE_BUILD_TYPE=Release ..
 * make
 
-### Usage
+## Usage
 
 * Either run through sudo, or setup apropriate udev rules for your interface
 * Run the MixiD executable
 
-## udev rules
+### udev rules
 
 Since by default, the audio interface is grabbed by the kernel module, and we require exclusive device grab to send information, we need to setup udev rules to allow not needing to use root permissions when opening MixiD.
 Luckily, all we have to do is add the Audient vendor id to the udev rules.
