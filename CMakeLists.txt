@@ -4,25 +4,35 @@ project(
   VERSION 0.1.6
   LANGUAGES CXX)
 
-add_definitions(-DVERSION_MIXID="${MixiD_VERSION}") 
+add_definitions(-DVERSION_MIXID="${MixiD_VERSION}")
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMake)
-INCLUDE(FindPkgConfig)
-include(FetchContent) 
-FetchContent_Declare(imgui_external
-	URL https://github.com/ocornut/imgui/archive/refs/tags/v1.92.4.tar.gz
-	EXCLUDE_FROM_ALL
-)
-FetchContent_MakeAvailable(imgui_external)
+include(FindPkgConfig)
 
-add_library(imgui
-	${imgui_external_SOURCE_DIR}/imgui.cpp
-	${imgui_external_SOURCE_DIR}/imgui_draw.cpp
-	${imgui_external_SOURCE_DIR}/imgui_tables.cpp
-	${imgui_external_SOURCE_DIR}/imgui_widgets.cpp
-	${imgui_external_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-	${imgui_external_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+set(IMGUI_RELEASE_DIR "" CACHE STRING
+    "Directory containing the imgui release files")
+if((IS_DIRECTORY ${IMGUI_RELEASE_DIR}))
+    set(IMGUI_EXTERNAL ${IMGUI_RELEASE_DIR})
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+        imgui_external
+        URL https://github.com/ocornut/imgui/archive/refs/tags/v1.92.4.tar.gz
+        EXCLUDE_FROM_ALL
+    )
+    FetchContent_MakeAvailable(imgui_external)
+    set(IMGUI_EXTERNAL ${imgui_external_SOURCE_DIR})
+endif()
+add_library(
+    imgui
+    ${IMGUI_EXTERNAL}/imgui.cpp
+    ${IMGUI_EXTERNAL}/imgui_draw.cpp
+    ${IMGUI_EXTERNAL}/imgui_tables.cpp
+    ${IMGUI_EXTERNAL}/imgui_widgets.cpp
+    ${IMGUI_EXTERNAL}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_EXTERNAL}/backends/imgui_impl_opengl3.cpp
 )
-target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
+target_include_directories(imgui PUBLIC ${IMGUI_EXTERNAL})
+
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 
