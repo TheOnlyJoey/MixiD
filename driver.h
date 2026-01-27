@@ -82,25 +82,6 @@ inline float u16_to_float(uint16_t data) {
     return temp;
 } 
 
-inline float u16_to_float(uint16_t data0, uint16_t data1) {
-	uint16_t data[2]= {data1, data0};
-	float num;
-	memcpy(&num,data,4);
-    return num;
-} 
-
-inline float u16_to_float_norm(uint16_t data0, uint16_t data1){
-	uint16_t data[2]= {data1, data0};
-	uint32_t merged_data;
-	memcpy(&merged_data,data,4);
-
-	//float x = (merged_data * (1.0f / 1073741824.0f));// -1.0f;
-	//float x = (merged_data * (1.0f / 1073741824.0f));// * 2.0f - 1.0f;
-	float x = (merged_data * (1.0f / 4294967296.0f)) * 2.0f - 1.0f;
-	if (x == -1.0f) x = nextafterf(x, 1.0f);
-	return x;
-}
-
 
 void set_vinyl_dm(float volume) {
 	uint16_t one = float_to_u16(volume);
