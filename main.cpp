@@ -225,6 +225,8 @@ int main(int, char**)
 				ImGui::BeginChild("Faders", ImVec2(0,0),0,ImGuiWindowFlags_HorizontalScrollbar);
 				ImVec2 ogpos = ImGui::GetCursorPos();
 				int inputcounter = 0;
+				//std::cout << meter_data << "\n";
+
 				for (size_t i = 0; i < (devices[driver_indicator].mic_inputs); i++) {
 					ImGui::BeginGroup();
 					if (i == 0)
@@ -232,9 +234,14 @@ int main(int, char**)
 					ImGui::Text("%s",(std::string(" Mic ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
 					ImVec2 faderPos = ImGui::GetCursorPos();
-					ImGui::SetCursorPosX(faderPos.x-8);
-					ImGui::ValueBar((std::to_string(i)+"##vUMic").c_str(), meter_data[inputcounter], ImVec2(12, absY/1.8), 0.0f, 1.0f);
-					ImGui::SetCursorPos(faderPos);
+					if (show_vu && connected) {
+						ImGui::SetCursorPosX(faderPos.x-8);
+						uint8_t data[2]= {meter_data[(inputcounter*2)],meter_data[(inputcounter*2)+1]};
+						uint16_t merged_data;
+						memcpy(&merged_data,data,2);
+						ImGui::ValueBar((std::to_string(i)+"##vUMic").c_str(), merged_data, ImVec2(12, absY/1.8), 0x0000, 0xFFFF);
+						ImGui::SetCursorPos(faderPos);
+					}
 					if (ImGui::VFaderFloat((std::to_string(i)+"##vMic").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
 							set_channel_volume(i, bar_value[inputcounter]);
@@ -255,9 +262,15 @@ int main(int, char**)
 					ImGui::Text("%s", (std::string(" Digi ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
 					ImVec2 faderPos = ImGui::GetCursorPos();
-					ImGui::SetCursorPosX(faderPos.x-8);
-					ImGui::ValueBar((std::to_string(i)+"##vUDigi").c_str(), bar_value[inputcounter], ImVec2(12, absY/1.8), 0.0f, 1.0f);
-					ImGui::SetCursorPos(faderPos);
+					if (show_vu && connected) {
+						ImGui::SetCursorPosX(faderPos.x-8);
+						uint8_t data[2]= {meter_data[(inputcounter*2)],meter_data[(inputcounter*2)+1]};
+						uint16_t merged_data;
+						memcpy(&merged_data,data,2);
+						ImGui::ValueBar((std::to_string(i)+"##vDigi").c_str(), merged_data, ImVec2(12, absY/1.8), 0x0000, 0xFFFF);
+						ImGui::SetCursorPos(faderPos);
+					}
+
 
 					if (ImGui::VFaderFloat((std::to_string(i)+"##vDigi").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
