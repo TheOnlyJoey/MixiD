@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.15...4.0)
 project(
-  MixiD
-  VERSION 0.1.6
-  LANGUAGES CXX)
+	MixiD
+	VERSION 0.1.6
+	LANGUAGES CXX)
 
 add_definitions(-DVERSION_MIXID="${MixiD_VERSION}") 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMake)

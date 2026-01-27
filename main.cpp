@@ -154,6 +154,8 @@ int main(int, char**)
 	    bar_value.clear();
 	}
 
+	bool show_vu = true;
+	float framecounter = 0;
 	// Main loop
 #ifdef __EMSCRIPTEN__
 	// For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
@@ -209,6 +211,15 @@ int main(int, char**)
 						phase_value.push_back(false);
 					}
 				}
+
+				if (show_vu && connected) {
+					framecounter += (1000.0f / io.Framerate);
+					//std::cout << 1000.0f / io.Framerate << "\n";
+					if (framecounter > 60)
+						framecounter = 0;
+					if (std::floor(std::fmod(framecounter, 2.0)) == 0)
+						poll_vu();
+				}
 				ImGui::SetNextWindowPos(ImVec2(absX*0.1,absY*0.1));
 				ImGui::SetNextWindowSize(ImVec2(absX*0.6, absY*0.8));
 				ImGui::BeginChild("Faders", ImVec2(0,0),0,ImGuiWindowFlags_HorizontalScrollbar);
@@ -218,14 +229,20 @@ int main(int, char**)
 					ImGui::BeginGroup();
 					if (i == 0)
 						ImGui::SetCursorPosY(3);
-					ImGui::Text("%s",(std::string("Mic ")+std::to_string(i+1)).c_str());
+					ImGui::Text("%s",(std::string(" Mic ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
+					ImVec2 faderPos = ImGui::GetCursorPos();
+					ImGui::SetCursorPosX(faderPos.x-8);
+					ImGui::ValueBar((std::to_string(i)+"##vUMic").c_str(), meter_data[inputcounter], ImVec2(12, absY/1.8), 0.0f, 1.0f);
+					ImGui::SetCursorPos(faderPos);
 					if (ImGui::VFaderFloat((std::to_string(i)+"##vMic").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
 							set_channel_volume(i, bar_value[inputcounter]);
 					};
+
 					ImGui::Dummy(ImVec2(0,32));
 					ImGui::PushFont(audiofont, 32);
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX()+8);
 					//if (toggleButton("Dim", ImVec2((absX*0.2)*0.3, 40), master_bools[0])) { if (connected) {set_bool_state(0);}};
 					if (toggleButton("###MicPhase"+std::to_string(i), ImVec2(0,0), phase_value[inputcounter])) {if (connected) set_phase_state(inputcounter);};
 					inputcounter++;
@@ -235,14 +252,20 @@ int main(int, char**)
 				}
 				for (size_t i = 0; i < (devices[driver_indicator].digital_inputs); i++) {
 					ImGui::BeginGroup();
-					ImGui::Text("%s", (std::string("Digi ")+std::to_string(i+1)).c_str());
+					ImGui::Text("%s", (std::string(" Digi ")+std::to_string(i+1)).c_str());
 					ImGui::Dummy(ImVec2(0,24));
+					ImVec2 faderPos = ImGui::GetCursorPos();
+					ImGui::SetCursorPosX(faderPos.x-8);
+					ImGui::ValueBar((std::to_string(i)+"##vUDigi").c_str(), bar_value[inputcounter], ImVec2(12, absY/1.8), 0.0f, 1.0f);
+					ImGui::SetCursorPos(faderPos);
+
 					if (ImGui::VFaderFloat((std::to_string(i)+"##vDigi").c_str(), ImVec2(42, absY/1.8), &bar_value[inputcounter], 0.0f, 1.0f, "%.2f")) {
 						if (connected)
 							set_channel_volume(i, bar_value[inputcounter]);
 					};
 					ImGui::Dummy(ImVec2(0,32));
 					ImGui::PushFont(audiofont, 32);
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX()+8);
 					if (toggleButton("###DigiPhase"+std::to_string(i), ImVec2(0,0), phase_value[inputcounter])) {if (connected) set_phase_state(inputcounter);};
 					inputcounter++;
 					ImGui::PopFont();
