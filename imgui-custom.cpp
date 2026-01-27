@@ -97,10 +97,6 @@ bool VFaderInt(const char* label, const ImVec2& size, int* v, int v_min, int v_m
 
 
 // Similar to `ImGui::ProgressBar`, but with a horizontal/vertical switch.
-// The value text doesn't follow the value like `ImGui::ProgressBar`.
-// Here it's simply displayed in the middle of the bar.
-// Horizontal labels are placed to the right of the rect.
-// Vertical labels are placed below the rect.
 void ValueBar(const char *label, const float value, const ImVec2 &size, const float min_value, const float max_value, const ValueBarFlags flags) {
 	const bool is_h = !(flags & ValueBarFlags_Vertical);
 	const ImGuiStyle &style = GetStyle();
@@ -112,21 +108,19 @@ void ValueBar(const char *label, const float value, const ImVec2 &size, const fl
 	const ImVec2 &rect_size = is_h ? ImVec2{CalcItemWidth(), frame_height} : size;//ImVec2{GetFontSize() * 2, size.y - label_size.y};
 	const ImVec2 &rect_start = cursor_pos + ImVec2{is_h ? 0 : fmax(0.0f, (label_size.x - rect_size.x) / 2), 0};
 
+	ImU32 bar_color = GetColorU32(ImGuiCol_Text);
+
 	draw_list->AddRectFilled(rect_start, rect_start + rect_size, GetColorU32(ImGuiCol_FrameBg), style.FrameRounding);
+	
+	if (value == max_value)
+		bar_color = ColorConvertFloat4ToU32(ImVec4(0.9,0.0,0.0,0.9));
+
 	draw_list->AddRectFilled(
 		rect_start + ImVec2{0, is_h ? 0 : (1 - fraction) * rect_size.y},
 		rect_start + rect_size * ImVec2{is_h ? fraction : 1, 1},
-		GetColorU32(ImGuiCol_Text),
+		bar_color,
 		style.FrameRounding, is_h ? ImDrawFlags_RoundCornersLeft : ImDrawFlags_RoundCornersBottom
 	);
-	//const std::string value_text = is_h ? std::format("{:.2f}", value) : std::format("{:.1f}", value);
-	//draw_list->AddText(rect_start + (rect_size - CalcTextSize(value_text.c_str())) / 2, GetColorU32(ImGuiCol_Text), value_text.c_str());
-	/*
-	if (label) {
-		draw_list->AddText(
-			rect_start + ImVec2{is_h ? rect_size.x + style.ItemInnerSpacing.x : (rect_size.x - label_size.x) / 2, style.FramePadding.y + (is_h ? 0 : rect_size.y)},
-			GetColorU32(ImGuiCol_Text), label);
-	}*/
 }
 
 void StyleColorsMixiD(ImGuiStyle* dst)
