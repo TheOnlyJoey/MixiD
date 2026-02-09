@@ -1,0 +1,7 @@
+Release/
+imgui.ini
+Raw_Assets.h
+
+.vale.ini
+result
+result-*
