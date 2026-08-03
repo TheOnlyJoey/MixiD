@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15...4.0)
 project(
   MixiD
   VERSION 0.1.6
-  LANGUAGES CXX)
+  LANGUAGES C CXX)
 
 add_definitions(-DVERSION_MIXID="${MixiD_VERSION}") 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/CMake)
@@ -32,6 +32,16 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 find_package(LibUSB REQUIRED)
 include_directories(${LIBUSB_INCLUDE_DIR})
 
+# optional: system tray icon (StatusNotifierItem over sd-bus). basu is the
+# standalone sd-bus used on distributions that do not ship systemd.
+pkg_check_modules(SDBUS libsystemd)
+if (NOT SDBUS_FOUND)
+	pkg_check_modules(SDBUS basu)
+	if (SDBUS_FOUND)
+		set(SDBUS_IS_BASU TRUE)
+	endif()
+endif()
+
 # convert data into code
 include(CMake/bin2h.cmake)
 file(GLOB_RECURSE ASSET_FILES CONFIGURE_DEPENDS Assets/*)
@@ -54,8 +64,25 @@ endforeach()
 message("Converted to C header: ${ASSET_FILES}")
 
 # Adding something we can run - Output name matches target name
-add_executable(MixiD main.cpp imgui-knobs.cpp imgui-custom.cpp)
+add_executable(MixiD main.cpp imgui-knobs.cpp imgui-custom.cpp tray.c)
 
 # Make sure you link your targets with this command. It can also link libraries and
 # even flags, so linking a target that does not exist will not give a configure-time error.
 target_link_libraries(MixiD PRIVATE imgui glfw ${OPENGL_LIBRARIES} ${LIBUSB_LIBRARIES})
+
+if (SDBUS_FOUND)
+	target_compile_definitions(MixiD PRIVATE HAVE_TRAY)
+	if (SDBUS_IS_BASU)
+		target_compile_definitions(MixiD PRIVATE HAVE_BASU)
+	endif()
+	target_include_directories(MixiD PRIVATE ${SDBUS_INCLUDE_DIRS})
+	target_link_libraries(MixiD PRIVATE ${SDBUS_LIBRARIES})
+else()
+	message(STATUS "libsystemd/basu not found, building without tray support")
+endif()
+
+# Desktop entry and icon, so MixiD shows up in application menus
+include(GNUInstallDirs)
+install(TARGETS MixiD RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES Desktop/mixid.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+install(FILES Desktop/mixid.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)

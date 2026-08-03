@@ -28,6 +28,7 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 * CMake
 * libglew-dev
 * GCC or Clang
+* libsystemd-dev, or basu on distributions without systemd (optional, enables the system tray icon)
 
 ### Compile
 * git clone the repository
@@ -40,6 +41,17 @@ Since there is no official support by Audient for the iD interfaces on Linux, Mi
 
 * Either run through sudo, or setup apropriate udev rules for your interface
 * Run the MixiD executable
+
+Optionally, `make install` also places a desktop entry and icon, so MixiD can be started from your application menu.
+
+### System tray
+
+When the desktop provides a system tray, closing the window hides MixiD there instead of quitting, so the interface stays connected and reachable.
+Clicking the icon shows and hides the window again, and right clicking it opens a menu with the monitor toggles (Dim, Alt, Talk, Phase, Mono) and Quit.
+
+This needs a StatusNotifier tray, which KDE Plasma, Cinnamon, Budgie, XFCE and LXQt provide out of the box.
+GNOME needs an appindicator extension for it, and compositors such as Sway or Hyprland need a panel that implements a tray, for example Waybar.
+Without one, or when built without libsystemd/basu, MixiD simply quits on close as before.
 
 ### udev rules
 
