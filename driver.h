@@ -9,6 +9,21 @@ static libusb_device_handle *devh = NULL;
 static bool driver_connected = false;
 static int control_iface = 0;
 
+// libusb reads a 0 timeout as "wait forever", so a request the firmware never
+// answers froze the whole UI with nothing printed at all. Bound every control
+// transfer, and name the request that failed instead of the function it was in.
+static const unsigned int USB_TIMEOUT_MS = 1000;
+
+static int id_control(uint16_t wValue, uint16_t wIndex, void *data, uint16_t len)
+{
+  int err = libusb_control_transfer(devh, 0x21, 0x1, wValue, wIndex, (uint8_t*)data, len, USB_TIMEOUT_MS);
+  if (err < 0) {
+    printf("control transfer wValue=0x%04x wIndex=0x%04x len=%u failed: %s\n",
+           wValue, wIndex, len, libusb_error_name(err));
+  }
+  return err;
+}
+
 int device_probe()
 {
   // discover devices
@@ -102,45 +117,33 @@ void set_vinyl_dm(float volume) {
   uint16_t one = float_to_u16(volume);
   uint16_t zero = float_to_u16(0);
   int err = 0;
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0100, 0x3c00 | control_iface, (uint8_t*)&one, 2, 0);
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0101, 0x3c00 | control_iface, (uint8_t*)&zero, 2, 0);
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0104, 0x3c00 | control_iface, (uint8_t*)&zero, 2, 0);
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0105, 0x3c00 | control_iface, (uint8_t*)&one, 2, 0);
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
+  err = id_control(0x0100, 0x3c00 | control_iface, &one, 2);
+  err = id_control(0x0101, 0x3c00 | control_iface, &zero, 2);
+  err = id_control(0x0104, 0x3c00 | control_iface, &zero, 2);
+  err = id_control(0x0105, 0x3c00 | control_iface, &one, 2);
 }
 
 void set_hp_volume(float volume) {
   assert(volume>=0 && volume<=1);
   uint16_t vol = float_to_u16(volume);
   int err = 0;
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0203, 0x0a00 | control_iface, (uint8_t*)&vol, 2, 0);
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0204, 0x0a00 | control_iface, (uint8_t*)&vol, 2, 0);
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
+  err = id_control(0x0203, 0x0a00 | control_iface, &vol, 2);
+  err = id_control(0x0204, 0x0a00 | control_iface, &vol, 2);
 }
 
 void set_speaker_volume(float volume) {
   assert(volume>=0 && volume<=1);
   uint16_t vol = float_to_u16(volume);
   int err = 0;
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x1200, 0x3600 | control_iface, (uint8_t*)&vol, 2, 0);
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
+  err = id_control(0x1200, 0x3600 | control_iface, &vol, 2);
 }
 
 void set_channel_volume(uint16_t chan, float volume) {
   assert(volume>=0 && volume<=1);
   uint16_t vol = float_to_u16(volume);
   int err = 0;
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0100+(chan*6), 0x3c00 | control_iface, (uint8_t*)&vol, 2, 0);
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0100+(chan*6)+1, 0x3c00 | control_iface, (uint8_t*)&vol, 2, 0);
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
+  err = id_control(0x0100+(chan*6), 0x3c00 | control_iface, &vol, 2);
+  err = id_control(0x0100+(chan*6)+1, 0x3c00 | control_iface, &vol, 2);
 }
 
 
@@ -151,11 +154,8 @@ void set_routing_value(int chan, int position)
 {
   int err = 0;
 
-  err = libusb_control_transfer(devh, 0x21, 0x1, chanVals[chan], 0x3300 | control_iface, (uint8_t*)&routeToggle[chan][position], 1, 0);
+  err = id_control(chanVals[chan], 0x3300 | control_iface, &routeToggle[chan][position], 1);
 
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
 }
 
 //TODO: eventually need ranges set in pre-defined device specific structs
@@ -174,11 +174,8 @@ void set_bool_state(int mode)
 {
   int err = 0;
   masterToggle[mode] = !masterToggle[mode];
-  err = libusb_control_transfer(devh, 0x21, 0x1, masterVals[mode], 0x3600 | control_iface, (uint8_t*)&masterToggle[mode], 1, 0);
+  err = id_control(masterVals[mode], 0x3600 | control_iface, &masterToggle[mode], 1);
 
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
   //return masterToggle[mode];
 }
 
@@ -188,11 +185,8 @@ void set_phase_state(int chan) //0 indexed
 {
   int err = 0;
   phaseToggle[chan] = !phaseToggle[chan];
-  err = libusb_control_transfer(devh, 0x21, 0x1, 0x0d01+chan, 0x0b00 | control_iface, (uint8_t*)&phaseToggle[chan], 1, 0);
+  err = id_control(0x0d01+chan, 0x0b00 | control_iface, &phaseToggle[chan], 1);
 
-  if (err < 0) {
-    printf("libusb_control_transfer failed: %s\n", libusb_error_name(err));
-  }
   //return masterToggle[mode];
 }
 
@@ -208,6 +202,9 @@ int driver_init(uint16_t deviceid)
   //if (!devh)
 //	devh = libusb_open_device_with_vid_pid(NULL, 0x2708, 0x0008); //MKII
   if (!devh) {
+    // Silence here read as "connected" in the UI while nothing was controlled;
+    // the usual cause is no permission on /dev/bus/usb (see the udev rules).
+    printf("could not open 2708:%04x: check the udev rule or run as root\n", deviceid);
     driver_connected = false;
     return false;
   }
@@ -228,6 +225,7 @@ int driver_init(uint16_t deviceid)
       return false;
     }
   }
+  printf("sending mixer control to interface %d\n", control_iface);
   err = libusb_claim_interface(devh, control_iface);
   if (err < 0) {
     printf("libusb_claim_interface failed: %s\n", libusb_error_name(err));
